@@ -29,42 +29,71 @@ function LoginComponent() {
   };
 
   return (
-    <div className="LoginPage">
-      {showSuccessMessage && (
-        <div className="authenticationMessage">Authenticated Successfully.</div>
-      )}
+    <div className="container max-w-xs flex justify-center items-center">
+      <form>
+        {showSuccessMessage && (
+          <div className="authenticationMessage">
+            Authenticated Successfully.
+          </div>
+        )}
 
-      {showErrorMessage && (
-        <div className="authenticationMessage">
-          Authentication Failed. Please check your credentials.
-        </div>
-      )}
+        {showErrorMessage && (
+          <div className="authenticationMessage text-red-400">
+            Authentication Failed. Please check your credentials.
+          </div>
+        )}
 
-      <div className="LoginForm">
+        {/* INPUT FIELDS */}
         <div>
-          <label>User Name</label>
-          <input
-            type="text"
-            name="username"
-            value={username}
-            onChange={handleUsernameChange}
-          />
+          {/* USERNAME FIELD */}
+          <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600 ">
+            <div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6">
+              Username :
+            </div>
+            <input
+              className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+              id="username"
+              type="text"
+              name="username"
+              value={username}
+              // placeholder="janesmith"
+              onChange={handleUsernameChange}
+            />
+          </div>
+
+          {/* PASSWORD FIELD */}
+          <div className="mt-3 flex items-center  rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+            <div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6">
+              Password :
+            </div>
+            <input
+              className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={handlePasswordChange}
+            />
+          </div>
         </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-        </div>
-        <div>
-          <button type="button" name="btnLogin" onClick={handleSubmit}>
+
+        {/* BUTTONS */}
+        <div className="mt-3 flex items-center justify-around">
+          {/* LOGIN BUTTON */}
+          <button
+            type="button"
+            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={handleSubmit}
+          >
             Login
           </button>
+
+          {/* REGISTER BUTTON */}
+          <button type="button" className="text-sm/6 font-semibold">
+            Register
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
