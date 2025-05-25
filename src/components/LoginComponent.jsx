@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../security/AuthContext";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 function LoginComponent() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showSuccessMessage, setSuccessMessage] = useState(false);
   const [showErrorMessage, setErrorMessage] = useState(false);
 
   const navigate = useNavigate();
@@ -20,28 +20,17 @@ function LoginComponent() {
     setPassword(event.target.value);
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = () => {
-    if (username === "rgcdev" && password === "rgcpassword") {
-      authContext.setAuthenticated(true);
-      authContext.setUserAuthenticated(username);
-      setSuccessMessage(true);
-      setErrorMessage(false);
-      navigate("/home");
-    } else {
-      setSuccessMessage(false);
-      setErrorMessage(true);
-    }
+    const loginStatus = authContext.login(username, password);
+
+    loginStatus ? navigate("/home") : setErrorMessage(true);
   };
 
   return (
     <div className="container max-w-xs flex justify-center items-center">
       <form>
-        {showSuccessMessage && (
-          <div className="authenticationMessage">
-            Authenticated Successfully.
-          </div>
-        )}
-
         {showErrorMessage && (
           <div className="authenticationMessage text-red-400">
             Authentication Failed. Please check your credentials.
@@ -73,13 +62,25 @@ function LoginComponent() {
             </div>
             <input
               className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               value={password}
               onChange={handlePasswordChange}
             />
           </div>
+        </div>
+
+        <div className="mt-3 flex items-center">
+          {/* SHOW PASSWORD */}
+          <button
+            className="w-5 h-5  mr-2"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
+          </button>
+          <p className="text-xs">Show password</p>
         </div>
 
         {/* BUTTONS */}
