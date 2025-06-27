@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../security/AuthContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
@@ -22,8 +22,12 @@ function LoginComponent() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = () => {
-    const loginStatus = authContext.login(username, password);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Username: " + username + " Password: " + password);
+
+    const loginStatus = await authContext.login(username, password);
+    console.log("loginStatus: " + loginStatus);
 
     loginStatus ? navigate("/home") : setErrorMessage(true);
   };
@@ -95,9 +99,9 @@ function LoginComponent() {
           </button>
 
           {/* REGISTER BUTTON */}
-          <button type="button" className="text-sm/6 font-semibold">
+          <Link to={"/register"} className="text-sm/6 font-semibold">
             Register
-          </button>
+          </Link>
         </div>
       </form>
     </div>
