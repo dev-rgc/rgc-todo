@@ -29,12 +29,10 @@ export const addUserTodoListRequest = (userTodo) =>
 
 // DELETE USER TODO LIST
 export const deleteUserTodoListById = (username) =>
-  apiClient.get("/todos/", {
+  apiClient.get(`/todos/${id}`, {
     params: { username },
   });
 
 // EDIT USER TODO LIST
-export const editUserTodoListById = (username) =>
-  apiClient.get("/todos/", {
-    params: { username },
-  });
+export const updateUserTodoListById = (id, userTodo) =>
+  apiClient.put(`/todos/${id}`, userTodo);

@@ -1,18 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import LogoutComponent from "./LogoutComponent";
 import ThemeToggle from "./ThemeToggle";
 import { Link } from "react-router-dom";
 import { useAuth } from "../security/AuthContext";
 function Header() {
-  // const authContext = useContext(AuthContext);
   const authContext = useAuth();
 
-  console.log("Header: ", authContext);
-
-  const handleClick = (e) => {
-    console.log("todo triggered!");
-    authContext.loadUserTodoList();
-  };
+  // console.log("Header: ", authContext);
 
   return (
     <header>
@@ -24,9 +18,7 @@ function Header() {
 
           {authContext.isAuthenticated && (
             <>
-              <Link to="/todos" onClick={handleClick}>
-                Todo
-              </Link>
+              <Link to="/todos">Todo</Link>
               <div className="grow justify-items-end mr-3">
                 <LogoutComponent />
               </div>

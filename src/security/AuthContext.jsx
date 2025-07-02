@@ -4,6 +4,7 @@ import {
   createUser,
   getUserTodoListByUsernameRequest,
   loginRequest,
+  updateUserTodoListById,
 } from "../api/axios"; // Import the Axios instance
 // import axios from "axios";
 
@@ -119,6 +120,21 @@ export default function AuthProvider({ children }) {
     }
   }
 
+  // UPDATE USER TODO LIST
+  async function updateUserTodoList(id, userTodo) {
+    try {
+      const response = await updateUserTodoListById(id, userTodo);
+      const responseMessage = response?.data?.value;
+      console.log("Response from API:", responseMessage);
+
+      return true;
+    } catch (error) {
+      setResponseError(error);
+      console.log("Error:", error);
+      return false;
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -130,6 +146,7 @@ export default function AuthProvider({ children }) {
         loadUserTodoList,
         userTodoList,
         addUserTodoList,
+        updateUserTodoList,
       }}
     >
       {children}

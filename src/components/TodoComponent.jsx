@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../security/AuthContext";
 import { PlusIcon } from "@heroicons/react/24/solid";
@@ -24,8 +24,17 @@ function TodoComponent() {
   // console.log("UserTodos: ", todo);
   // console.log("todoId: ", todo.id);
 
+  useEffect(() => {
+    authContext.loadUserTodoList();
+  }, []);
+
   const goToTodo = () => {
     navigate("/todo");
+  };
+
+  const handleEdit = (id) => {
+    // e.preventDefault();
+    navigate(`/todo?id=${id}`);
   };
 
   return (
@@ -61,7 +70,12 @@ function TodoComponent() {
                 <td className="px-4 py-2 border-b">{element.targetDate}</td>
                 <td className="px-4 py-2 border-b">{element.user.id}</td>
                 <td className="px-4 py-2 border-b">
-                  <button className="w-6 h-6" onClick={() => {}}>
+                  <button
+                    className="w-6 h-6"
+                    onClick={() => {
+                      handleEdit(element.id);
+                    }}
+                  >
                     <PencilSquareIcon />{" "}
                   </button>
                   <button className="w-6 h-6" onClick={() => {}}>
