@@ -6,14 +6,20 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format, formatDate } from "date-fns";
 import { useAuth } from "../security/AuthContext";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function TodoDetailsComponent() {
   const navigate = useNavigate();
   const authContext = useAuth();
   const userAuthenticated = authContext.userAuthenticated;
+  const userTodoList = authContext.userTodoList;
+  const query = new URLSearchParams(useLocation().search);
+  const id = query.get("id"); // ✅ returns id from url
+
+  //   const [todoList, setTodoList] = useState([]);
   const [showCalendar, setShowCalendar] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   // USER TODO OBJECT
   const [userTodo, setUserTodo] = useState({
@@ -26,14 +32,43 @@ function TodoDetailsComponent() {
   });
 
   useEffect(() => {
-    if (userAuthenticated?.data) {
+    if (!userAuthenticated?.data) return;
+
+    if (id) {
+      const todo = userTodoList.find((t) => t.id === Number(id));
+
+      if (todo) {
+        setEditMode(true);
+        console.log("Edit mode:", true, "Editing Todo:", todo);
+
+        setUserTodo((prev) => ({
+          ...prev,
+          userId: todo.user.id,
+          username: todo.user.username,
+          description: todo.description,
+          isDone: todo.isDone,
+          dateCreated: todo.dateCreated,
+          targetDate: todo.targetDate,
+        }));
+      } else {
+        console.warn("Todo not found with ID:", id);
+      }
+    } else {
+      setEditMode(false);
+      console.log(
+        "Edit Mode:",
+        false,
+        "Creating new todo for:",
+        `${userAuthenticated.data.username} (ID: ${userAuthenticated.data.id})`
+      );
+
       setUserTodo((prev) => ({
         ...prev,
         userId: userAuthenticated.data.id,
         username: userAuthenticated.data.username,
       }));
     }
-  }, [userAuthenticated]);
+  }, [id, userTodoList, userAuthenticated]);
 
   const handleChange = (e) => {
     setUserTodo({
@@ -44,19 +79,31 @@ function TodoDetailsComponent() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    let result;
+
     try {
-      console.log("To be added user todo:", userTodo);
-      const result = await authContext.addUserTodoList(userTodo);
-      console.log("Adding user todo result: ", result);
+      if (editMode) {
+        console.log("To be updated user todo:", userTodo);
+        result = await authContext.updateUserTodoList(id, userTodo);
+        console.log("Updating user todo result: ", result);
+      } else {
+        console.log("To be added user todo:", userTodo);
+        result = await authContext.addUserTodoList(userTodo);
+        console.log("Adding user todo result: ", result);
+      }
 
       if (result === true) {
         authContext.loadUserTodoList();
         navigate("/todos");
       }
     } catch (error) {
-      console.error("Failed to add user todo:", error);
+      console.error("Failed to save user todo:", error);
       setErrorMessage(true);
     }
+  };
+
+  const handleCancel = () => {
+    navigate("/todos");
   };
 
   return (
@@ -142,7 +189,7 @@ function TodoDetailsComponent() {
             <button
               type="button"
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              // onClick={handleSubmit}
+              onClick={handleCancel}
             >
               CANCEL
             </button>
