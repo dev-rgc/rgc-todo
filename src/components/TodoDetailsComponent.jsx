@@ -7,6 +7,7 @@ import { format, formatDate } from "date-fns";
 import { useAuth } from "../security/AuthContext";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useLocation } from "react-router-dom";
+import { findTodoById } from "../utils/todos";
 
 function TodoDetailsComponent() {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ function TodoDetailsComponent() {
     if (!userAuthenticated?.data) return;
 
     if (id) {
-      const todo = userTodoList.find((t) => t.id === Number(id));
+      const todo = findTodoById(userTodoList, id);
 
       if (todo) {
         setEditMode(true);
