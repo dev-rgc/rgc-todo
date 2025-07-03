@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../security/AuthContext";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import { findTodoById, findTodoByIdAndUpdate } from "../utils/todos";
+import { format, formatDate } from "date-fns";
 import {
   DocumentPlusIcon,
   DocumentTextIcon,
   DocumentMinusIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/solid";
+import { updateUserTodoListById } from "../api/axios";
 
 function TodoComponent() {
   const navigate = useNavigate();
@@ -21,7 +24,7 @@ function TodoComponent() {
   const authContext = useAuth();
   console.log("AuthContext: ", authContext);
   const todos = authContext.userTodoList;
-  // console.log("UserTodos: ", todo);
+  console.log("UserTodos: ", todos);
   // console.log("todoId: ", todo.id);
 
   useEffect(() => {
@@ -35,6 +38,38 @@ function TodoComponent() {
   const handleEdit = (id) => {
     // e.preventDefault();
     navigate(`/todo?id=${id}`);
+  };
+
+  const handleCheck = async (e) => {
+    const val = e.target.checked;
+    const checkBoxTodoId = Number(e.target.id);
+
+    console.log("Checkbox changed:", checkBoxTodoId, val);
+
+    const mappedTodo = findTodoByIdAndUpdate(todos, checkBoxTodoId, {
+      isDone: val,
+    });
+
+    console.log("mapped:", mappedTodo);
+    if (!mappedTodo) {
+      console.warn("No todo found for checkbox:", checkBoxTodoId);
+      return;
+    }
+
+    try {
+      const result = await updateUserTodoListById(checkBoxTodoId, mappedTodo);
+      console.log(result);
+      // Adjust this check based on what your API returns
+      if (result?.data?.value === "Todo updated successfully.") {
+        authContext.loadUserTodoList();
+      } else {
+        console.warn("Unexpected response:", result);
+        setErrorMessage(true);
+      }
+    } catch (error) {
+      console.error("Failed to update user todo isDone:", error);
+      setErrorMessage(true);
+    }
   };
 
   return (
@@ -64,9 +99,24 @@ function TodoComponent() {
               >
                 <td className="px-4 py-2 border-b">{element.id}</td>
                 <td className="px-4 py-2 border-b">{element.description}</td>
-                <td className="px-4 py-2 border-b">
+                {/* <td className="px-4 py-2 border-b">
                   {element.isDone.toString()}
+                </td> */}
+
+                <td className="px-4 py-2 border-b">
+                  <input
+                    type="checkbox"
+                    id={element.id}
+                    name="checkbox"
+                    checked={
+                      element.isDone === true || element.isDone === "true"
+                    }
+                    onChange={handleCheck}
+                    // disabled
+                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 disabled:cursor-default"
+                  />
                 </td>
+
                 <td className="px-4 py-2 border-b">{element.targetDate}</td>
                 <td className="px-4 py-2 border-b">{element.user.id}</td>
                 <td className="px-4 py-2 border-b">
