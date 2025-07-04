@@ -23,16 +23,21 @@ export const getUserTodoListByUsernameRequest = (username) =>
     params: { username },
   });
 
+export const getTodoByUserIdAndIsDeletedFalse = (userId) =>
+  apiClient.get("/todos/", {
+    params: { userId },
+  });
+
 // CREATE USER TODO LIST
 export const addUserTodoListRequest = (userTodo) =>
   apiClient.post("/todos/", userTodo);
+
+// EDIT USER TODO LIST
+export const updateUserTodoListById = (id, userTodo) =>
+  apiClient.put(`/todos/${id}`, userTodo);
 
 // DELETE USER TODO LIST
 export const deleteUserTodoListById = (username) =>
   apiClient.get(`/todos/${id}`, {
     params: { username },
   });
-
-// EDIT USER TODO LIST
-export const updateUserTodoListById = (id, userTodo) =>
-  apiClient.put(`/todos/${id}`, userTodo);

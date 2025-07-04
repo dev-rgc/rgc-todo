@@ -30,6 +30,7 @@ function TodoDetailsComponent() {
     isDone: false,
     dateCreated: format(new Date(), "yyyy-MM-dd"),
     targetDate: format(new Date(), "yyyy-MM-dd"),
+    isDeleted: "",
   });
 
   useEffect(() => {
@@ -50,6 +51,7 @@ function TodoDetailsComponent() {
           isDone: todo.isDone,
           dateCreated: todo.dateCreated,
           targetDate: todo.targetDate,
+          isDeleted: todo.isDeleted,
         }));
       } else {
         console.warn("Todo not found with ID:", id);
