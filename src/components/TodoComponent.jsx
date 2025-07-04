@@ -14,26 +14,14 @@ import { updateUserTodoListById } from "../api/axios";
 
 function TodoComponent() {
   const navigate = useNavigate();
-  // const todos = [
-  //   { id: 1, description: "Learn HTML", isDone: false },
-  //   { id: 2, description: "Learn CSS", isDone: false },
-  //   { id: 3, description: "Learn JS", isDone: false },
-  //   { id: 4, description: "Learn React", isDone: false },
-  // ];
-
-  const authContext = useAuth();
-  console.log("AuthContext: ", authContext);
-  const todos = authContext.userTodoList;
-  console.log("UserTodos: ", todos);
-  // console.log("todoId: ", todo.id);
+  const authContext = useAuth(); // CONTEXT PROVIDER
+  // console.log("AuthContext: ", authContext);
+  const todos = authContext.userTodoList; // USER TODOS
+  // console.log("UserTodos: ", todos);
 
   useEffect(() => {
     authContext.loadUserTodoList();
   }, []);
-
-  const goToTodo = () => {
-    navigate("/todo");
-  };
 
   const handleEdit = (id) => {
     // e.preventDefault();
@@ -72,10 +60,39 @@ function TodoComponent() {
     }
   };
 
+  const handleDelete = async (e) => {
+    const todoId = e.currentTarget.id;
+    const val = e.currentTarget.value;
+    // const isDeleted = e.target.value === "true"; // → boolean
+
+    console.log("todoId:" + todoId + " value:" + val);
+
+    const mappedTodo = findTodoByIdAndUpdate(todos, todoId, {
+      isDeleted: val === "true",
+    });
+
+    console.log("mapped:", mappedTodo);
+
+    try {
+      const result = await updateUserTodoListById(todoId, mappedTodo);
+      console.log(result);
+      // Adjust this check based on what your API returns
+      if (result?.data?.value === "Todo updated successfully.") {
+        authContext.loadUserTodoList();
+      } else {
+        console.warn("Unexpected response:", result);
+        setErrorMessage(true);
+      }
+    } catch (error) {
+      console.error("Failed to update user todo isDeleted:", error);
+      setErrorMessage(true);
+    }
+  };
+
   return (
     <div className="container">
       <div className="flex flex-row justify-end mb-1">
-        <button className="w-6 h-6" onClick={goToTodo}>
+        <button className="w-6 h-6" onClick={() => navigate("/todo")}>
           <DocumentPlusIcon />
         </button>
       </div>
@@ -99,10 +116,6 @@ function TodoComponent() {
               >
                 <td className="px-4 py-2 border-b">{element.id}</td>
                 <td className="px-4 py-2 border-b">{element.description}</td>
-                {/* <td className="px-4 py-2 border-b">
-                  {element.isDone.toString()}
-                </td> */}
-
                 <td className="px-4 py-2 border-b">
                   <input
                     type="checkbox"
@@ -116,7 +129,6 @@ function TodoComponent() {
                     className="w-4 h-4 text-indigo-600 rounded border-gray-300 disabled:cursor-default"
                   />
                 </td>
-
                 <td className="px-4 py-2 border-b">{element.targetDate}</td>
                 <td className="px-4 py-2 border-b">{element.user.id}</td>
                 <td className="px-4 py-2 border-b">
@@ -128,7 +140,12 @@ function TodoComponent() {
                   >
                     <PencilSquareIcon />{" "}
                   </button>
-                  <button className="w-6 h-6" onClick={() => {}}>
+                  <button
+                    className="w-6 h-6"
+                    id={element.id}
+                    value="true"
+                    onClick={handleDelete}
+                  >
                     <DocumentMinusIcon />
                   </button>
                 </td>

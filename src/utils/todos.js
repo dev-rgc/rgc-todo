@@ -3,9 +3,24 @@ export const findTodoById = (todos, id) => {
   return todos.find((t) => t.id === Number(id));
 };
 
-export const findTodoByIdAndUpdate = (todos, id, override = {}) => {
+export const findTodoByIdAndUpdate = (
+  todos,
+  id,
+  override = {},
+  fallback = null
+) => {
   const todo = todos.find((t) => t.id === Number(id));
-  if (!todo) return fallback;
+  if (!todo) {
+    console.warn(`Todo not found with ID: ${id}`);
+    return fallback;
+  }
+
+  // ✅ Log override values
+  console.log(
+    "findTodoByIdAndUpdate - override.isDeleted:",
+    override.isDeleted
+  );
+  console.log("findTodoByIdAndUpdate - override.isDone:", override.isDone);
 
   return {
     userId: todo.user.id,
@@ -17,6 +32,9 @@ export const findTodoByIdAndUpdate = (todos, id, override = {}) => {
     ).toString(),
     dateCreated: todo.dateCreated,
     targetDate: todo.targetDate,
-    isDeleted: todo.isDeleted,
+    isDeleted: (typeof override.isDeleted === "boolean"
+      ? override.isDeleted
+      : todo.isDeleted
+    ).toString(),
   };
 };

@@ -3,6 +3,7 @@ import {
   addUserTodoListRequest,
   createUser,
   getUserTodoListByUsernameRequest,
+  getTodoByUserIdAndIsDeletedFalse,
   loginRequest,
   updateUserTodoListById,
 } from "../api/axios"; // Import the Axios instance
@@ -63,6 +64,7 @@ export default function AuthProvider({ children }) {
       if (loginMessage === "Login successful.") {
         setAuthenticated(true);
         setUserAuthenticated(response.data);
+        console.log("login cred:", response.data);
         return true;
       }
       return false;
@@ -82,10 +84,14 @@ export default function AuthProvider({ children }) {
 
   // LOAD USER TODO LIST
   async function loadUserTodoList() {
+    console.log("userData:", userAuthenticated);
     const user = userAuthenticated.data.username;
+    const userId = userAuthenticated.data.id;
+    console.log("userId:", userId);
     try {
       setLoading(true);
-      const response = await getUserTodoListByUsernameRequest(user);
+      // const response = await getUserTodoListByUsernameRequest(user);
+      const response = await getTodoByUserIdAndIsDeletedFalse(userId);
 
       setResponseData(response.data);
       setUserTodoList(response.data);
