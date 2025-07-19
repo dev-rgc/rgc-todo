@@ -84,10 +84,9 @@ export default function AuthProvider({ children }) {
 
   // LOAD USER TODO LIST
   async function loadUserTodoList() {
-    console.log("userData:", userAuthenticated);
     const user = userAuthenticated.data.username;
     const userId = userAuthenticated.data.id;
-    console.log("userId:", userId);
+    // console.log("userId:", userId);
     try {
       setLoading(true);
       // const response = await getUserTodoListByUsernameRequest(user);
